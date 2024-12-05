@@ -51,7 +51,7 @@ export default function App() {
             />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text style={styles.leaderboardItem}>Direk tagged Noah</Text>
+            <Text style={styles.leaderboardItem}>Berend123_ tagged Noah</Text>
             <Image
               style={styles.tagImage}
               source={require("./assets/test-images/test-1.jpg")}
