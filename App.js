@@ -1,64 +1,57 @@
-import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-} from "react-native";
-import styles from "./styles";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import React, { useState, useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { auth } from "./utils/firebaseConfig"; // Import Firebase auth
 
-export default function App() {
+import SignupScreen from "./pages/signup";
+import HomeScreen from "./pages/home";
+import LoginScreen from "./pages/login";
+import AccountScreen from "./pages/account";
+import LobbyScreen from "./pages/lobbyscreen";
+import CameraScreen from "./pages/camera";
+import { onAuthStateChanged } from "firebase/auth"; // Import the method for listening to auth state
+
+const Stack = createStackNavigator();
+
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // null initially to wait for auth state
+
+  useEffect(() => {
+    // This will be triggered when the auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true); // User is signed in
+      } else {
+        setIsAuthenticated(false); // No user is signed in
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, []);
+
+  if (isAuthenticated === null) {
+    // Wait for the authentication state to be determined
+    return null; // Or show a loading screen
+  }
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header Section */}
-        <View style={styles.header}>
-          <TouchableOpacity>
-            <Icon name="home" style={styles.icon} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Uni boys</Text>
-          <TouchableOpacity>
-            <Icon name="account" style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Leaderboard Section */}
-        <View style={styles.leaderboard}>
-          <Text style={styles.sectionTitle}>Leaderboard</Text>
-          <View style={styles.leaderboardList}>
-            <Text style={styles.leaderboardItem}>1. Berend123_</Text>
-            <Text style={styles.leaderboardItem}>2. RYRY_theguy</Text>
-            <Text style={styles.leaderboardItem}>3. Noano7</Text>
-          </View>
-          <TouchableOpacity>
-            <Text style={styles.fullLeaderboardText}>
-              Press for full leaderboard
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Most Recent Tags Section */}
-        <Text style={styles.sectionTitle}>Most recent tags</Text>
-        <ScrollView style={styles.recentTags}>
-          <TouchableOpacity>
-            <Text style={styles.leaderboardItem}>Noah tagged ryan</Text>
-            <Image
-              style={styles.tagImage}
-              source={require("./assets/test-images/test-0.jpg")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.leaderboardItem}>Berend123_ tagged Noah</Text>
-            <Image
-              style={styles.tagImage}
-              source={require("./assets/test-images/test-1.jpg")}
-            />
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName={isAuthenticated ? "Home" : "Login"}
+        screenOptions={{
+          headerShown: false,
+          animationEnabled: false,
+        }}
+      >
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="Account" component={AccountScreen} />
+        <Stack.Screen name="Lobby" component={LobbyScreen} />
+        <Stack.Screen name="Camera" component={CameraScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
+};
+
+export default App;
