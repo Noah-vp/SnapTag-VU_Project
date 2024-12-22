@@ -1,1 +1,5 @@
-location
+max length username and game
+location tacking,
+    permissions
+    New tagger screen?
+    Dicuss with group

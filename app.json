@@ -4,10 +4,17 @@
     "slug": "snaptag",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons/logo.png",
+    "splash": {
+      "image": "./assets/icons/logo.png",
+      "resizeMode": "cover"
+    },
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "plugins": [
       [
         "expo-camera",
@@ -18,13 +25,30 @@
         }
       ]
     ],
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.noahvp.snaptag"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7b3ec7f9-38d7-4469-adf4-f4dbfc0eac4d"
+      }
+    },
+    "android": {
+      "package": "com.noah_vp.snaptag",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "owner": "noah_vp",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7b3ec7f9-38d7-4469-adf4-f4dbfc0eac4d"
     }
   }
 }

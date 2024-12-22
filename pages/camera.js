@@ -168,11 +168,11 @@ const CameraScreen = ({ navigation }) => {
       try {
         const options = { quality: 0.7, base64: true, exif: true };
         const photo = await cameraRef.current.takePictureAsync(options);
-        console.log("Picture taken!", photo);
+        //console.log("Picture taken!", photo);
 
         const newPath = `${FileSystem.documentDirectory}photo.jpg`;
         await FileSystem.copyAsync({ from: photo.uri, to: newPath });
-        console.log("Photo saved at: ", newPath);
+        //console.log("Photo saved at: ", newPath);
 
         setPhotoUri(newPath); // Store photo URI for preview
       } catch (error) {

@@ -66,6 +66,13 @@ export const fetchLobbyDetails = async (lobbyId) => {
           lobbyData.users,
           lobbyData.images
         );
+        // Sort userDetails by totalTaggerTime in ascending order
+        userDetails.sort((a, b) => a.totalTaggerTime - b.totalTaggerTime);
+
+        // Add ranking property to each user
+        userDetails.forEach((user, index) => {
+          user.ranking = index + 1; // Ranking starts at 1
+        });
         return { lobbyData, userDetails };
       }
     }
@@ -92,7 +99,7 @@ export const fetchUserDetails = async (userIds, tags = []) => {
       return durationInMinutes;
     };
 
-    const userDetailsPromises = userIds.map(async (uid, index) => {
+    const userDetailsPromises = userIds.map(async (uid) => {
       const userRef = ref(db, `users/${uid}`);
       const userSnapshot = await get(userRef);
 
@@ -118,7 +125,6 @@ export const fetchUserDetails = async (userIds, tags = []) => {
         return {
           username: userData.username,
           uid,
-          ranking: index + 1,
           totalTaggerTime,
         };
       } else {
@@ -151,6 +157,9 @@ export const isTagger = async (lobbyId, userId) => {
 
     const lobbyData = lobbySnapshot.val();
     const images = lobbyData.images || {}; // Default to an empty object if no images
+    if (Object.keys(images).length === 0) {
+      return true;
+    }
 
     // 2. Extract start and end tag times for the given user
     const startTaggerTimes = Object.values(images)
@@ -181,11 +190,11 @@ export const isTagger = async (lobbyId, userId) => {
       return parsedStartTime > parsedEndTime;
     });
 
-    // console.log(
-    //   `User ${userId} is ${
-    //     isCurrentlyTagger ? "" : "not "
-    //   }the current tagger in lobby ${lobbyId}`
-    // );
+    console.log(
+      `User ${userId} is ${
+        isCurrentlyTagger ? "" : "not "
+      }the current tagger in lobby ${lobbyId}`
+    );
     return isCurrentlyTagger;
   } catch (error) {
     console.error("Error checking if user is tagger:", error.message);
@@ -197,25 +206,27 @@ export const isTagger = async (lobbyId, userId) => {
 export const fetchImagesWithCaptions = async (imagesData, userDetailsLocal) => {
   try {
     // Assuming `imagesData` is already passed as the `lobbyData.images` object
-    const images = Object.keys(imagesData).map((imageKey) => {
-      const image = imagesData[imageKey];
+    if (imagesData) {
+      const images = Object.keys(imagesData).map((imageKey) => {
+        const image = imagesData[imageKey];
 
-      // Find the associated caption and user information
-      const caption = image.caption.replace(/{(.*?)}/g, (match, uuid) => {
-        const user = userDetailsLocal.find((user) => user.uid === uuid);
-        return user ? user.username : match;
+        // Find the associated caption and user information
+        const caption = image.caption.replace(/{(.*?)}/g, (match, uuid) => {
+          const user = userDetailsLocal.find((user) => user.uid === uuid);
+          return user ? user.username : match;
+        });
+
+        return {
+          caption,
+          imageUrl: image.imageUrl || null, // Ensure the imageUrl is correctly set
+          uploadedAt: new Date(image.uploadedAt), // Convert the upload time to a Date object
+          imageName: image.imageName,
+        };
       });
 
-      return {
-        caption,
-        imageUrl: image.imageUrl || null, // Ensure the imageUrl is correctly set
-        uploadedAt: new Date(image.uploadedAt), // Convert the upload time to a Date object
-        imageName: image.imageName,
-      };
-    });
-
-    // Sort images by upload date (newest to oldest)
-    return images.sort((a, b) => b.uploadedAt - a.uploadedAt); // Sorting by upload date
+      // Sort images by upload date (newest to oldest)
+      return images.sort((a, b) => b.uploadedAt - a.uploadedAt); // Sorting by upload date
+    }
   } catch (error) {
     console.error("Error fetching images with captions:", error.message);
     return [];
