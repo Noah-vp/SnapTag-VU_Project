@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 
 import Navbar from "../components/navbar";
-import Header from "../components/home/header";
-import Gameviewer from "../components/home/game_viewer";
+import Gameviewer from "../components/game_viewer";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -21,38 +21,18 @@ const styles = StyleSheet.create({
 });
 
 const HomeScreen = ({ navigation }) => {
-  // State to track the active tab
-  const [activeTab, setActiveTab] = useState("Games");
-
-  // Function to handle tab changes
-  const handleTabChange = (tab) => {
-    setActiveTab(tab); // Update the active tab state
-  };
   return (
     <View style={styles.container}>
-      {/* Header Section */}
-      <Header
-        navigation={navigation}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      ></Header>
-      <View style={styles.content}>
+      <SafeAreaView style={styles.content}>
         {(() => {
-          switch (activeTab) {
-            case "Games":
-              return (
-                <Gameviewer
-                  navigation={navigation}
-                  style={styles.content}
-                ></Gameviewer>
-              );
-            case "Feed":
-              return <Text>This is the Feed.</Text>;
-            default:
-              return <Text>Select a tab.</Text>;
-          }
+          return (
+            <Gameviewer
+              navigation={navigation}
+              style={styles.content}
+            ></Gameviewer>
+          );
         })()}
-      </View>
+      </SafeAreaView>
       <View style={styles.navbar}>
         <Navbar navigation={navigation} activeTab={"Home"} />
       </View>

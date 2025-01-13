@@ -131,7 +131,6 @@ export const fetchUserDetails = async (userIds, tags = []) => {
         return {
           username: "Unknown User",
           uid,
-          ranking: index + 1,
           totalTaggerTime,
         };
       }
@@ -190,11 +189,11 @@ export const isTagger = async (lobbyId, userId) => {
       return parsedStartTime > parsedEndTime;
     });
 
-    console.log(
-      `User ${userId} is ${
-        isCurrentlyTagger ? "" : "not "
-      }the current tagger in lobby ${lobbyId}`
-    );
+    // console.log(
+    //   `User ${userId} is ${
+    //     isCurrentlyTagger ? "" : "not "
+    //   }the current tagger in lobby ${lobbyId}`
+    // );
     return isCurrentlyTagger;
   } catch (error) {
     console.error("Error checking if user is tagger:", error.message);
@@ -266,10 +265,12 @@ export const createLobby = async (additionalData = {}) => {
   }
 
   try {
-    const lobbyRef = push(ref(db, "lobbies"));
-    const lobbyData = { users: [user.uid], ...additionalData };
-    await set(lobbyRef, lobbyData);
-    return lobbyRef.key; // Return the lobby ID
+    if (additionalData.lobbyName.length < 11) {
+      const lobbyRef = push(ref(db, "lobbies"));
+      const lobbyData = { users: [user.uid], ...additionalData };
+      await set(lobbyRef, lobbyData);
+      return lobbyRef.key; // Return the lobby ID
+    }
   } catch (error) {
     console.error("Error creating lobby:", error.message);
   }
@@ -315,8 +316,12 @@ export const updateUsername = async (newUsername) => {
   const user = auth.currentUser;
   if (user) {
     try {
-      await set(ref(db, `users/${user.uid}`), { username: newUsername });
-      console.log("Username updated successfully");
+      if (username.length <= 10) {
+        await set(ref(db, `users/${user.uid}`), { username: newUsername });
+        console.log("Username updated successfully");
+      } else {
+        console.error("Error updating username: Max 10 char.");
+      }
     } catch (error) {
       console.error("Error updating username:", error.message);
     }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>846417879453-j4kka7r5fnpom7av3k792406l1im7h0e.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.846417879453-j4kka7r5fnpom7av3k792406l1im7h0e</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBUINMSv6aLJbJ1lI9bmEQkIRXPCm765xo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>846417879453</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.noahvp.snaptag</string>
+	<key>PROJECT_ID</key>
+	<string>snaptag-85eff</string>
+	<key>STORAGE_BUCKET</key>
+	<string>snaptag-85eff.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:846417879453:ios:d5b7ce580da5ef4d098f74</string>
+	<key>DATABASE_URL</key>
+	<string>https://snaptag-85eff-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>

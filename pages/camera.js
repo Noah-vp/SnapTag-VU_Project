@@ -149,14 +149,8 @@ const CameraScreen = ({ navigation }) => {
   }
 
   if (!permission.granted) {
-    return (
-      <View style={styles.permissionContainer}>
-        <Text style={styles.permissionText}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
-      </View>
-    );
+    requestPermission();
+    return <View style={styles.permissionContainer}></View>;
   }
 
   function toggleCameraFacing() {

@@ -1,0 +1,10 @@
+
+highlight the yourself
+** current tagger
+make the feed an expandable in the lobby screen
+add time to games
+locations screen
+improving closing buttons
+improving error clarity when username or lobbyname is too long
+
+**for android add firebase file

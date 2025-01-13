@@ -7,12 +7,8 @@ import {
   FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Popup from "../popup"; // Assuming you have a general popup component
-import {
-  fetchGames,
-  createLobby,
-  joinLobby,
-} from "../../utils/firebaseFunctions"; // Importing the functions
+import Popup from "./popup"; // Assuming you have a general popup component
+import { fetchGames, createLobby, joinLobby } from "../utils/firebaseFunctions"; // Importing the functions
 
 const GameViewer = ({ navigation }) => {
   const [games, setGames] = useState([]);
@@ -58,7 +54,7 @@ const GameViewer = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.joinButton}
-        onPress={() => navigation.navigate("Lobby", { lobbyId: item.id })}
+        onPress={() => navigation.push("Lobby", { lobbyId: item.id })}
       >
         <Text style={styles.joinText}>Show Lobby</Text>
       </TouchableOpacity>
@@ -128,7 +124,7 @@ const GameViewer = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    paddingTop: 20,
+    paddingBottom: 0,
     flex: 1,
   },
   header: {

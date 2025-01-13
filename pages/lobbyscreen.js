@@ -15,13 +15,17 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Correct 
 import {
   fetchLobbyDetails,
   fetchImagesWithCaptions,
+  isTagger,
 } from "../utils/firebaseFunctions"; // Importing the functions
+import { auth } from "../utils/firebaseConfig";
 
 const LobbyScreen = ({ navigation }) => {
   const { lobbyId } = useRoute().params;
   const [lobbyData, setLobbyData] = useState(null);
   const [userDetails, setUserDetails] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
+  const [tagger, setTagger] = useState("");
+  const currentUser = auth.currentUser;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +37,13 @@ const LobbyScreen = ({ navigation }) => {
         userDetails
       ); // Use imported function
       setImageUrls(images);
+      for (const user of userDetails) {
+        const isUserTagger = await isTagger(lobbyId, user.uid);
+        if (isUserTagger) {
+          //console.log("Tagger UID:", user.uid); // Ensure user.uid is valid
+          setTagger(user.uid);
+        }
+      }
     };
 
     fetchData();
@@ -42,19 +53,31 @@ const LobbyScreen = ({ navigation }) => {
     Clipboard.setString(lobbyId); // Copy lobbyId to clipboard
     ToastAndroid.show("Lobby ID copied to clipboard!", ToastAndroid.SHORT);
   };
+  const renderUserItem = ({ item }) => {
+    const isCurrentUser = item.uid === currentUser.uid; // Compare the item.uid with the current authenticated user's uid
+    const isCurrentTagger = item.uid === tagger;
 
-  const renderUserItem = ({ item }) => (
-    <View style={styles.userItem}>
-      <Text style={styles.ranking}>{item.ranking}</Text>
-      <View style={styles.userDetails}>
-        <Text style={styles.username}>{item.username}</Text>
-        <Text style={styles.uid}>
-          Time spend as tagger: {item.totalTaggerTime} min
-        </Text>
-        <Text style={styles.uid}>ID: {item.uid}</Text>
+    return (
+      <View style={styles.userItem}>
+        <Text style={styles.ranking}>{item.ranking}</Text>
+        <View style={styles.userDetails}>
+          <Text
+            style={[
+              styles.username,
+              isCurrentUser && { color: "#007BFF" }, // Apply blue color if the user is the current user
+              isCurrentTagger && { color: "red" },
+            ]}
+          >
+            {item.username}
+          </Text>
+          <Text style={styles.uid}>
+            Time spent as tagger: {item.totalTaggerTime} min
+          </Text>
+          <Text style={styles.uid}>ID: {item.uid}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderImageItem = ({ item }) => (
     <View style={styles.imageContainer}>
