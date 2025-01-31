@@ -1,10 +1,12 @@
-
-highlight the yourself
+** highlight the yourself
 ** current tagger
-make the feed an expandable in the lobby screen
-add time to games
+** make the feed an expandable in the lobby screen
 locations screen
+lobby data send to tagger screen
+
 improving closing buttons
 improving error clarity when username or lobbyname is too long
+
+add time to games
 
 **for android add firebase file

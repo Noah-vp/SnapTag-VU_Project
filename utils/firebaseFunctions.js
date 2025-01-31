@@ -11,6 +11,18 @@ import { getDownloadURL, ref as sRef, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "./firebaseConfig";
 import { parseISO, differenceInMinutes } from "date-fns";
 
+export const updateUserLocation = async (lobbyId, userId, address) => {
+  try {
+    await set(ref(db, `lobbies/${lobbyId}/locations/${userId}`), {
+      address: address,
+      uploadTime: new Date().toISOString(),
+    });
+    console.log("User location updated successfully.");
+  } catch (error) {
+    console.error("Error updating user location:", error);
+  }
+};
+
 export const uploadImageToLobby = async (imageUri, lobbyId, captionUser) => {
   if (!imageUri || !lobbyId) {
     console.error("Image URI and Lobby ID are required.");
@@ -64,7 +76,8 @@ export const fetchLobbyDetails = async (lobbyId) => {
       if (lobbyData.users) {
         const userDetails = await fetchUserDetails(
           lobbyData.users,
-          lobbyData.images
+          lobbyData.images,
+          lobbyId
         );
         // Sort userDetails by totalTaggerTime in ascending order
         userDetails.sort((a, b) => a.totalTaggerTime - b.totalTaggerTime);
@@ -84,7 +97,7 @@ export const fetchLobbyDetails = async (lobbyId) => {
 };
 
 // Fetch user details from Firebase
-export const fetchUserDetails = async (userIds, tags = []) => {
+export const fetchUserDetails = async (userIds, tags = [], lobbyId) => {
   try {
     const calculateTaggerDurationInMinutes = (startTagger, endTagger) => {
       // Parse the start time (uploadedAt) and end time
@@ -105,13 +118,44 @@ export const fetchUserDetails = async (userIds, tags = []) => {
 
       const startTagger = Object.values(tags)
         .filter((tag) => tag.caption.includes("tagged {" + uid))
-        .map((time) => time.uploadedAt);
+        .map((time) => {
+          // Log the caption of each filtered picture
+          // if (uid == "ZopVThDNI5XkRgWegpno1CgK31L2") {
+          //   console.log(
+          //     "START: ",
+          //     "Filtered Caption:",
+          //     time.caption,
+          //     "  time:",
+          //     time.uploadedAt
+          //   );
+          // }
+          return time.uploadedAt;
+        });
       const endTagger = Object.values(tags)
         .filter((tag) => tag.caption.includes(uid + "} tagged"))
-        .map((time) => time.uploadedAt);
+        .map((time) => {
+          // Log the caption of each filtered picture
+          // if (uid == "ZopVThDNI5XkRgWegpno1CgK31L2") {
+          //   console.log(
+          //     "END: ",
+          //     "Filtered Caption:",
+          //     time.caption,
+          //     "  time:",
+          //     time.uploadedAt
+          //   );
+          // }
+          return time.uploadedAt;
+        });
 
       let totalTaggerTime = 0; // To accumulate total time the user has been tagger
 
+      if (endTagger.length > startTagger.length) {
+        //The first player tagged in the game
+        endTagger.shift();
+      }
+      if (isTagger(lobbyId, uid)) {
+        endTagger.shift();
+      }
       // Calculate total time for all "startTagger" events
       for (let i = 0; i < startTagger.length; i++) {
         const start = startTagger[i];
@@ -150,6 +194,7 @@ export const isTagger = async (lobbyId, userId) => {
     const lobbySnapshot = await get(lobbyRef);
 
     if (!lobbySnapshot.exists()) {
+      console.log(userId);
       console.warn(`Lobby with ID ${lobbyId} does not exist.`);
       return false;
     }
@@ -169,6 +214,10 @@ export const isTagger = async (lobbyId, userId) => {
       .filter((tag) => tag.caption.includes(`${userId}} tagged`))
       .map((time) => time.uploadedAt);
 
+    if (endTaggerTimes.length > startTaggerTimes.length) {
+      //The first player tagged in the game
+      endTaggerTimes.shift();
+    }
     if (startTaggerTimes.length === 0) {
       // No start times found for this user, so they aren't the tagger
       //console.log(`No tag events found for user ${userId} in lobby ${lobbyId}`);

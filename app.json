@@ -19,6 +19,12 @@
     "@react-native-firebase/app",
     "@react-native-firebase/auth",
     [
+      "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location even when the app is in the background."
+      }
+    ],
+    [
       "expo-build-properties",
       {
         "ios": {
@@ -40,7 +46,11 @@
     "bundleIdentifier": "com.noahvp.snaptag",
     "googleServicesFile": "./GoogleService-Info.plist",
     "infoPlist": {
-      "NSCameraUsageDescription": "We need access to your camera for the app."
+      "NSLocationWhenInUseUsageDescription": "We need your location to provide location-based features.",
+      "NSLocationAlwaysAndWhenInUseUsageDescription": "We need your location to track you even when the app is in the background.",
+      "NSCameraUsageDescription": "We need access to your camera for taking photos and videos.",
+      "NSMicrophoneUsageDescription": "We need access to your microphone for recording audio during gameplay.",
+      "NSLocationAlwaysUsageDescription": "We need your location even when the app is in the background for tracking gameplay updates."
     }
   },
   "extra": {
@@ -52,11 +62,14 @@
     "package": "com.noah_vp.snaptag",
     "permissions": [
       "android.permission.CAMERA",
-      "android.permission.RECORD_AUDIO"
+      "android.permission.RECORD_AUDIO",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.ACCESS_BACKGROUND_LOCATION"
     ]
   },
   "owner": "noah_vp",
-  "runtimeVersion": "1.0.0", 
+  "runtimeVersion": "1.0.0",
   "updates": {
     "url": "https://u.expo.dev/7b3ec7f9-38d7-4469-adf4-f4dbfc0eac4d"
   }

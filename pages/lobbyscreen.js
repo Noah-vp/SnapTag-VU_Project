@@ -25,6 +25,7 @@ const LobbyScreen = ({ navigation }) => {
   const [userDetails, setUserDetails] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [tagger, setTagger] = useState("");
+  const [feedExpended, setFeedExpended] = useState(false);
   const currentUser = auth.currentUser;
 
   useEffect(() => {
@@ -58,14 +59,19 @@ const LobbyScreen = ({ navigation }) => {
     const isCurrentTagger = item.uid === tagger;
 
     return (
-      <View style={styles.userItem}>
+      <View
+        style={[
+          styles.userItem,
+          isCurrentTagger && { backgroundColor: "#ffd0d0" },
+        ]}
+      >
         <Text style={styles.ranking}>{item.ranking}</Text>
         <View style={styles.userDetails}>
           <Text
             style={[
               styles.username,
-              isCurrentUser && { color: "#007BFF" }, // Apply blue color if the user is the current user
               isCurrentTagger && { color: "red" },
+              isCurrentUser && { color: "#007BFF" }, // Apply blue color if the user is the current user
             ]}
           >
             {item.username}
@@ -75,6 +81,21 @@ const LobbyScreen = ({ navigation }) => {
           </Text>
           <Text style={styles.uid}>ID: {item.uid}</Text>
         </View>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.push("Tagger", {
+              lobbyData: lobbyData,
+              userDetails: userDetails,
+              lobbyId: lobbyId,
+            })
+          }
+          style={[
+            styles.iconWrapper,
+            isCurrentUser && isCurrentTagger && { display: "flex" },
+          ]}
+        >
+          <Icon name="map-marker" style={styles.icon} />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -112,28 +133,59 @@ const LobbyScreen = ({ navigation }) => {
               <Icon name="content-copy" style={styles.copyIcon} />
             </TouchableOpacity>
           </View>
-          <View style={styles.rankingContainer}>
+          <View
+            style={[
+              styles.rankingContainer,
+              feedExpended ? { height: 200 } : { flex: 1 },
+            ]}
+          >
             <FlatList
+              style={[{ flex: 1 }]}
               data={userDetails}
               keyExtractor={(item) => item.uid}
               renderItem={renderUserItem}
             />
           </View>
-          <FlatList
-            data={imageUrls}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderImageItem}
-            contentContainerStyle={styles.imageList}
-          />
-
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => {
-              console.log("deletion is not yet implemented.");
-            }}
-          >
-            <Text style={styles.deleteButtonText}>Delete Lobby</Text>
-          </TouchableOpacity>
+          {feedExpended == true ? (
+            <View>
+              <TouchableOpacity
+                style={styles.feedExpender}
+                onPress={() => setFeedExpended(false)}
+              >
+                <Text style={styles.feedExpenderText}>Collapse Feed</Text>
+                <Icon
+                  name="arrow-down"
+                  size={24}
+                  color="#007BFF"
+                  style={{ marginLeft: 0 }}
+                />
+              </TouchableOpacity>
+              <FlatList
+                style={{
+                  borderTopWidth: 1,
+                  borderTopColor: "#CCC",
+                  paddingTop: 10,
+                }}
+                data={imageUrls}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderImageItem}
+                contentContainerStyle={styles.imageList}
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.feedExpender}
+              onPress={() => setFeedExpended(true)}
+            >
+              <Text style={styles.feedExpenderText}>Show Feed</Text>
+              <Icon
+                name="arrow-up"
+                size={24}
+                color="#007BFF"
+                style={{ marginLeft: 0 }}
+              />
+            </TouchableOpacity>
+          )}
         </>
       ) : (
         <Text style={styles.loadingText}>Loading lobby details...</Text>
@@ -186,8 +238,8 @@ const styles = StyleSheet.create({
   ranking: {
     fontSize: 18,
     fontWeight: "bold",
-    marginRight: 15,
     textAlign: "center",
+    width: 40, // Consistent width
     alignSelf: "center",
   },
   userItem: {
@@ -252,7 +304,36 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, // Add a bottom border
     borderBottomColor: "#CCC", // Light gray for subtle separation
     marginVertical: 10,
-    maxHeight: 200,
+  },
+  feedExpender: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+    marginBottom: 10,
+  },
+  feedExpenderText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  iconWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 40, // Same width as ranking
+    height: 40, // Same height for consistency
+    display: "none", // Default to hidden
+  },
+  icon: {
+    fontSize: 28, // Match ranking font size
+    color: "black",
+    alignSelf: "center",
   },
 });
 
